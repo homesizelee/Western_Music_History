@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>復習クイズ</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <main class="page">
+    <header class="site-header">
+      <div class="course-label">復習用クイズ</div>
+      <h1>福岡国際音楽大学 2026年前期「西洋音楽史 1」</h1>
+      <p class="subtitle">
+        問題形式を選択してください。選択式問題では、選択肢の順番が毎回ランダムに入れ替わる。
+      </p>
+    </header>
+
+    <section id="mode-select" class="panel">
+      <h2>問題形式を選ぶ</h2>
+      <div class="mode-buttons">
+        <button class="mode-button" onclick="startQuiz('truefalse')">
+          マルバツ問題
+        </button>
+        <button class="mode-button" onclick="startQuiz('multiple')">
+          選択式問題
+        </button>
+      </div>
+    </section>
+
+    <section id="quiz-area" class="panel hidden">
+      <div class="quiz-top">
+        <button class="back-button" onclick="backToMenu()">← 形式選択へ戻る</button>
+        <div id="progress" class="progress"></div>
+      </div>
+
+      <div class="meta">
+        <span id="range-label"></span>
+        <span id="mode-label"></span>
+      </div>
+
+      <h2 id="question-text" class="question-text"></h2>
+
+      <div id="choices" class="choices"></div>
+
+      <div id="result" class="result"></div>
+      <div id="answer-note" class="answer-note"></div>
+
+      <button id="next-button" class="next-button hidden" onclick="nextQuestion()">
+        次の問題へ
+      </button>
+    </section>
+
+    <footer class="footer">
+      <p>このページは、中間テストの出題範囲を示し、それに基づく復習を目的とした教材である。</p>
+      <p>担当：李　惠平（ri-keihei-ff@m.takagigakuen.ac.jp）</p>
+    </footer>
+  </main>
+
+  <script src="questions.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
