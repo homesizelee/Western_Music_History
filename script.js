@@ -2,6 +2,28 @@ let currentMode = null;
 let currentQuestions = [];
 let currentIndex = 0;
 let currentQuestion = null;
+let correctCount = 0;
+let hasAnswered = false;
+
+const elements = {
+  modeSelect: document.getElementById("mode-select"),
+  quizArea: document.getElementById("quiz-area"),
+  progress: document.getElementById("progress"),
+  progressTrack: document.getElementById("progress-track"),
+  progressBar: document.getElementById("progress-bar"),
+  rangeLabel: document.getElementById("range-label"),
+  modeLabel: document.getElementById("mode-label"),
+  questionBlock: document.getElementById("question-block"),
+  questionNumber: document.getElementById("question-number"),
+  questionText: document.getElementById("question-text"),
+  choices: document.getElementById("choices"),
+  feedback: document.getElementById("feedback"),
+  result: document.getElementById("result"),
+  answerNote: document.getElementById("answer-note"),
+  quizActions: document.getElementById("quiz-actions"),
+  nextButton: document.getElementById("next-button"),
+  backButton: document.getElementById("back-button")
+};
 
 function shuffleArray(array) {
   const copied = [...array];
@@ -12,22 +34,45 @@ function shuffleArray(array) {
   return copied;
 }
 
+function setQuestionCounts() {
+  document.getElementById("truefalse-count").textContent =
+    `${trueFalseQuestions.length} 問`;
+  document.getElementById("multiple-count").textContent =
+    `${multipleChoiceQuestions.length} 問`;
+}
+
 function startQuiz(mode) {
   currentMode = mode;
   currentIndex = 0;
+  correctCount = 0;
 
   if (mode === "truefalse") {
     currentQuestions = shuffleArray(trueFalseQuestions);
-    document.getElementById("mode-label").textContent = "マルバツ問題";
+    elements.modeLabel.textContent = "マルバツ問題";
   } else {
     currentQuestions = shuffleArray(multipleChoiceQuestions);
-    document.getElementById("mode-label").textContent = "選択式問題";
+    elements.modeLabel.textContent = "選択式問題";
   }
 
-  document.getElementById("mode-select").classList.add("hidden");
-  document.getElementById("quiz-area").classList.remove("hidden");
-
+  elements.modeSelect.classList.add("hidden");
+  elements.quizArea.classList.remove("hidden");
+  restoreQuizLayout();
   showQuestion();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function updateProgress() {
+  const current = currentIndex + 1;
+  const total = currentQuestions.length;
+  const percent = total ? Math.round((current / total) * 100) : 0;
+
+  elements.progress.innerHTML = `<strong>${current}</strong> / ${total}`;
+  elements.progressBar.style.width = `${percent}%`;
+  elements.progressTrack.setAttribute("aria-valuenow", String(percent));
+  elements.progressTrack.setAttribute(
+    "aria-valuetext",
+    `${total}問中${current}問目`
+  );
 }
 
 function showQuestion() {
@@ -39,56 +84,63 @@ function showQuestion() {
   }
 
   currentQuestion = currentQuestions[currentIndex];
+  hasAnswered = false;
+  updateProgress();
 
-  document.getElementById("progress").textContent =
-    `${currentIndex + 1} / ${currentQuestions.length}`;
+  elements.rangeLabel.textContent = currentQuestion.range
+    ? `出題範囲：${currentQuestion.range}`
+    : "";
+  elements.questionNumber.textContent = `QUESTION ${String(currentIndex + 1).padStart(2, "0")}`;
+  elements.questionText.textContent = currentQuestion.question;
+  elements.choices.innerHTML = "";
 
-  document.getElementById("range-label").textContent =
-    currentQuestion.range ? `出題範囲：${currentQuestion.range}` : "";
-
-  document.getElementById("question-text").textContent = currentQuestion.question;
-
-  const choicesDiv = document.getElementById("choices");
-  choicesDiv.innerHTML = "";
-
-  let choices = [];
-
-  if (currentMode === "truefalse") {
-    choices = ["○", "×"];
-  } else {
-    choices = shuffleArray(currentQuestion.choices);
-  }
+  const choices = currentMode === "truefalse"
+    ? ["○", "×"]
+    : shuffleArray(currentQuestion.choices);
 
   choices.forEach((choice, index) => {
     const button = document.createElement("button");
+    const label = currentMode === "multiple"
+      ? ["A", "B", "C", "D"][index]
+      : ["○", "×"][index];
+
     button.className = "choice-button";
-
-    if (currentMode === "multiple") {
-      const label = ["A", "B", "C", "D"][index];
-      button.textContent = `${label}. ${choice}`;
-      button.dataset.answerText = choice;
-    } else {
-      button.textContent = choice;
-      button.dataset.answerText = choice;
-    }
-
-    button.onclick = () => checkAnswer(button.dataset.answerText, button);
-    choicesDiv.appendChild(button);
+    button.type = "button";
+    button.dataset.answerText = choice;
+    button.innerHTML = `
+      <span class="choice-key" aria-hidden="true">${label}</span>
+      <span class="choice-text"></span>
+    `;
+    button.querySelector(".choice-text").textContent = choice;
+    button.setAttribute("aria-label", `${label}、${choice}`);
+    button.addEventListener("click", () => checkAnswer(choice, button));
+    elements.choices.appendChild(button);
   });
+
+  requestAnimationFrame(() => elements.questionText.focus({ preventScroll: true }));
 }
 
 function checkAnswer(selected, selectedButton) {
-  const buttons = document.querySelectorAll(".choice-button");
-  buttons.forEach(button => button.disabled = true);
+  if (hasAnswered) return;
+  hasAnswered = true;
+
+  const buttons = elements.choices.querySelectorAll(".choice-button");
+  buttons.forEach(button => {
+    button.disabled = true;
+  });
 
   const correctAnswer = currentQuestion.answer;
+  const isCorrect = selected === correctAnswer;
 
-  if (selected === correctAnswer) {
+  if (isCorrect) {
+    correctCount++;
     selectedButton.classList.add("correct");
-    document.getElementById("result").textContent = "正解です。";
+    elements.result.textContent = "✓ 正解です";
+    elements.feedback.classList.add("is-correct");
   } else {
     selectedButton.classList.add("wrong");
-    document.getElementById("result").textContent = "不正解です。";
+    elements.result.textContent = "不正解です";
+    elements.feedback.classList.add("is-wrong");
 
     buttons.forEach(button => {
       if (button.dataset.answerText === correctAnswer) {
@@ -97,10 +149,16 @@ function checkAnswer(selected, selectedButton) {
     });
   }
 
-  document.getElementById("answer-note").textContent =
-    `正解：${correctAnswer}`;
-
-  document.getElementById("next-button").classList.remove("hidden");
+  elements.answerNote.innerHTML = "";
+  const answerLabel = document.createElement("strong");
+  answerLabel.textContent = "正解：";
+  elements.answerNote.append(answerLabel, document.createTextNode(correctAnswer));
+  elements.feedback.classList.remove("hidden");
+  elements.nextButton.classList.remove("hidden");
+  elements.nextButton.textContent = currentIndex === currentQuestions.length - 1
+    ? "結果を見る →"
+    : "次の問題へ →";
+  elements.nextButton.focus({ preventScroll: true });
 }
 
 function nextQuestion() {
@@ -109,20 +167,56 @@ function nextQuestion() {
 }
 
 function showFinishedMessage() {
-  document.getElementById("progress").textContent = "";
-  document.getElementById("range-label").textContent = "";
-  document.getElementById("question-text").textContent =
-    "この形式の問題を一通り解き終えました。もう一度解く場合は、形式選択に戻ってください。";
-  document.getElementById("choices").innerHTML = "";
-  document.getElementById("result").textContent = "";
-  document.getElementById("answer-note").textContent = "";
-  document.getElementById("next-button").classList.add("hidden");
+  const total = currentQuestions.length;
+  const percentage = total ? Math.round((correctCount / total) * 100) : 0;
+  let message = "もう一度挑戦して、知識を定着させましょう。";
+
+  if (percentage === 100) {
+    message = "全問正解です。すばらしい仕上がりです。";
+  } else if (percentage >= 80) {
+    message = "よく理解できています。間違えた箇所を確認しましょう。";
+  } else if (percentage >= 60) {
+    message = "あと一歩です。苦手な範囲を重点的に復習しましょう。";
+  }
+
+  elements.progress.innerHTML = `<strong>${total}</strong> / ${total}`;
+  elements.progressBar.style.width = "100%";
+  elements.progressTrack.setAttribute("aria-valuenow", "100");
+  elements.progressTrack.setAttribute("aria-valuetext", "完了");
+  elements.rangeLabel.textContent = "全問終了";
+  elements.questionBlock.classList.add("hidden");
+  elements.choices.innerHTML = `
+    <div class="finish-state">
+      <div class="finish-medallion" aria-hidden="true">${percentage}<small>%</small></div>
+      <h2>おつかれさまでした</h2>
+      <p><strong>${total}問中 ${correctCount}問</strong> 正解しました。</p>
+      <p>${message}</p>
+      <div class="finish-actions">
+        <button class="finish-button" type="button" data-action="retry">同じ形式でもう一度</button>
+        <button class="finish-button secondary" type="button" data-action="menu">形式選択へ戻る</button>
+      </div>
+    </div>
+  `;
+  elements.feedback.classList.add("hidden");
+  elements.quizActions.classList.add("hidden");
+
+  elements.choices.querySelector('[data-action="retry"]').addEventListener("click", () => {
+    startQuiz(currentMode);
+  });
+  elements.choices.querySelector('[data-action="menu"]').addEventListener("click", backToMenu);
+  elements.choices.querySelector('[data-action="retry"]').focus({ preventScroll: true });
+}
+
+function restoreQuizLayout() {
+  elements.questionBlock.classList.remove("hidden");
+  elements.quizActions.classList.remove("hidden");
 }
 
 function clearResult() {
-  document.getElementById("result").textContent = "";
-  document.getElementById("answer-note").textContent = "";
-  document.getElementById("next-button").classList.add("hidden");
+  elements.result.textContent = "";
+  elements.answerNote.textContent = "";
+  elements.feedback.className = "feedback hidden";
+  elements.nextButton.classList.add("hidden");
 }
 
 function backToMenu() {
@@ -130,7 +224,39 @@ function backToMenu() {
   currentQuestions = [];
   currentIndex = 0;
   currentQuestion = null;
+  correctCount = 0;
+  hasAnswered = false;
 
-  document.getElementById("quiz-area").classList.add("hidden");
-  document.getElementById("mode-select").classList.remove("hidden");
+  elements.quizArea.classList.add("hidden");
+  elements.modeSelect.classList.remove("hidden");
+  restoreQuizLayout();
+  clearResult();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  document.querySelector(".mode-button").focus({ preventScroll: true });
 }
+
+function handleKeyboard(event) {
+  if (elements.quizArea.classList.contains("hidden")) return;
+
+  if (!hasAnswered && /^[1-4]$/.test(event.key)) {
+    const index = Number(event.key) - 1;
+    const button = elements.choices.querySelectorAll(".choice-button")[index];
+    if (button) button.click();
+  }
+
+  if (hasAnswered && (event.key === "Enter" || event.key === "ArrowRight")) {
+    if (document.activeElement !== elements.nextButton) {
+      event.preventDefault();
+      elements.nextButton.click();
+    }
+  }
+}
+
+document.querySelectorAll(".mode-button").forEach(button => {
+  button.addEventListener("click", () => startQuiz(button.dataset.mode));
+});
+
+elements.backButton.addEventListener("click", backToMenu);
+elements.nextButton.addEventListener("click", nextQuestion);
+document.addEventListener("keydown", handleKeyboard);
+setQuestionCounts();

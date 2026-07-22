@@ -3,58 +3,117 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>復習クイズ</title>
+  <meta name="theme-color" content="#002366" />
+  <meta
+    name="description"
+    content="福岡国際音楽大学 2026年前期「西洋音楽史 1」の中間テスト復習クイズ"
+  />
+  <title>西洋音楽史 1｜復習クイズ</title>
   <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
-  <main class="page">
+  <a class="skip-link" href="#main-content">メインコンテンツへ</a>
+
+  <main id="main-content" class="page">
     <header class="site-header">
-      <div class="course-label">復習用クイズ</div>
-      <h1>福岡国際音楽大学 2026年前期「西洋音楽史 1」</h1>
-      <p class="subtitle">
-        問題形式を選択してください。選択式問題では、選択肢の順番が毎回ランダムに入れ替わる。
-      </p>
+      <div class="header-mark" aria-hidden="true">
+        <span>Ⅰ</span>
+      </div>
+      <div class="header-copy">
+        <p class="course-label">REVIEW QUIZ · 2026</p>
+        <h1>西洋音楽史 <span>1</span></h1>
+        <p class="course-name">福岡国際音楽大学・2026年前期</p>
+        <p class="subtitle">
+          中間テストの出題範囲を、二つの形式で確認できます。選択式問題の選択肢は、毎回ランダムに並び替わります。
+        </p>
+      </div>
     </header>
 
-    <section id="mode-select" class="panel">
-      <h2>問題形式を選ぶ</h2>
+    <section id="mode-select" class="panel mode-panel" aria-labelledby="mode-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">START</p>
+          <h2 id="mode-title">問題形式を選ぶ</h2>
+        </div>
+        <p>取り組みたい形式を選択してください。</p>
+      </div>
+
       <div class="mode-buttons">
-        <button class="mode-button" onclick="startQuiz('truefalse')">
-          マルバツ問題
+        <button class="mode-button" type="button" data-mode="truefalse">
+          <span class="mode-icon" aria-hidden="true">○<i>×</i></span>
+          <span class="mode-copy">
+            <strong>マルバツ問題</strong>
+            <small>文章が正しいかを判断する</small>
+          </span>
+          <span id="truefalse-count" class="mode-count"></span>
+          <span class="mode-arrow" aria-hidden="true">→</span>
         </button>
-        <button class="mode-button" onclick="startQuiz('multiple')">
-          選択式問題
+
+        <button class="mode-button" type="button" data-mode="multiple">
+          <span class="mode-icon mode-icon-letters" aria-hidden="true">A<i>B</i></span>
+          <span class="mode-copy">
+            <strong>選択式問題</strong>
+            <small>四つの選択肢から答えを選ぶ</small>
+          </span>
+          <span id="multiple-count" class="mode-count"></span>
+          <span class="mode-arrow" aria-hidden="true">→</span>
         </button>
+      </div>
+
+      <div class="study-note">
+        <span aria-hidden="true">♪</span>
+        <p><strong>学習のヒント</strong>　迷った問題も、正解を確認してから次へ進みましょう。</p>
       </div>
     </section>
 
-    <section id="quiz-area" class="panel hidden">
+    <section id="quiz-area" class="panel quiz-panel hidden" aria-labelledby="question-text">
       <div class="quiz-top">
-        <button class="back-button" onclick="backToMenu()">← 形式選択へ戻る</button>
-        <div id="progress" class="progress"></div>
+        <button id="back-button" class="back-button" type="button">
+          <span aria-hidden="true">←</span> 形式選択へ戻る
+        </button>
+        <div id="progress" class="progress" aria-live="polite"></div>
+      </div>
+
+      <div
+        id="progress-track"
+        class="progress-track"
+        role="progressbar"
+        aria-label="問題の進捗"
+        aria-valuemin="0"
+        aria-valuemax="100"
+        aria-valuenow="0"
+      >
+        <span id="progress-bar"></span>
       </div>
 
       <div class="meta">
         <span id="range-label"></span>
-        <span id="mode-label"></span>
+        <span id="mode-label" class="mode-label"></span>
       </div>
 
-      <h2 id="question-text" class="question-text"></h2>
+      <div id="question-block" class="question-block">
+        <p id="question-number" class="question-number"></p>
+        <h2 id="question-text" class="question-text" tabindex="-1"></h2>
+      </div>
 
-      <div id="choices" class="choices"></div>
+      <div id="choices" class="choices" aria-label="選択肢"></div>
 
-      <div id="result" class="result"></div>
-      <div id="answer-note" class="answer-note"></div>
+      <div id="feedback" class="feedback hidden" aria-live="polite" aria-atomic="true">
+        <div id="result" class="result"></div>
+        <div id="answer-note" class="answer-note"></div>
+      </div>
 
-      <button id="next-button" class="next-button hidden" onclick="nextQuestion()">
-        次の問題へ
-      </button>
+      <div id="quiz-actions" class="quiz-actions">
+        <button id="next-button" class="next-button hidden" type="button">
+          次の問題へ <span aria-hidden="true">→</span>
+        </button>
+      </div>
     </section>
 
     <footer class="footer">
-      <p>このページは、中間テストの出題範囲を示し、それに基づく復習を目的とした教材である。</p>
-      <p>担当：李　惠平（ri-keihei-ff@m.takagigakuen.ac.jp）</p>
+      <p>このページは、中間テストの出題範囲に基づく復習教材です。</p>
+      <p>担当：李　惠平 <span aria-hidden="true">·</span> <a href="mailto:ri-keihei-ff@m.takagigakuen.ac.jp">ri-keihei-ff@m.takagigakuen.ac.jp</a></p>
     </footer>
   </main>
 
