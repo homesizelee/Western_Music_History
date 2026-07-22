@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#002366" />
   <meta
     name="description"
-    content="福岡国際音楽大学 2026年前期「西洋音楽史 1」の中間テスト復習クイズ"
+    content="福岡国際音楽大学 2026年前期「西洋音楽史 1」の期末試験復習クイズ"
   />
   <title>西洋音楽史 1｜復習クイズ</title>
   <link rel="stylesheet" href="style.css" />
@@ -25,7 +25,7 @@
         <h1>西洋音楽史 <span>1</span></h1>
         <p class="course-name">福岡国際音楽大学・2026年前期</p>
         <p class="subtitle">
-          中間テストの出題範囲を、二つの形式で確認できます。選択式問題の選択肢は、毎回ランダムに並び替わります。
+          期末試験の出題範囲を、二つの形式で確認できます。選択式問題の選択肢は、毎回ランダムに並び替わります。
         </p>
       </div>
     </header>
@@ -72,7 +72,19 @@
         <button id="back-button" class="back-button" type="button">
           <span aria-hidden="true">←</span> 形式選択へ戻る
         </button>
-        <div id="progress" class="progress" aria-live="polite"></div>
+        <div class="quiz-top-actions">
+          <button
+            id="status-button"
+            class="status-button"
+            type="button"
+            aria-haspopup="dialog"
+            aria-controls="status-dialog"
+          >
+            <span class="status-button-icon" aria-hidden="true">▥</span>
+            途中経過
+          </button>
+          <div id="progress" class="progress" aria-live="polite"></div>
+        </div>
       </div>
 
       <div
@@ -111,8 +123,55 @@
       </div>
     </section>
 
+    <dialog id="status-dialog" class="status-dialog" aria-labelledby="status-title">
+      <div class="status-dialog-inner">
+        <div class="status-dialog-header">
+          <div>
+            <p class="section-kicker">PROGRESS</p>
+            <h2 id="status-title">現在の解答状況</h2>
+          </div>
+          <button id="status-close-icon" class="dialog-close-icon" type="button" aria-label="閉じる">×</button>
+        </div>
+
+        <div class="status-summary">
+          <div id="status-ring" class="status-ring" aria-hidden="true">
+            <div>
+              <strong id="status-percentage">0</strong>
+              <small>%</small>
+            </div>
+          </div>
+          <div class="status-summary-copy">
+            <p>現在の正解率</p>
+            <strong id="status-message">まずは一問、挑戦してみましょう。</strong>
+          </div>
+        </div>
+
+        <dl class="status-stats">
+          <div>
+            <dt>解答済み</dt>
+            <dd><strong id="status-answered">0</strong><span>問</span></dd>
+          </div>
+          <div class="is-correct">
+            <dt>正解</dt>
+            <dd><strong id="status-correct">0</strong><span>問</span></dd>
+          </div>
+          <div class="is-wrong">
+            <dt>不正解</dt>
+            <dd><strong id="status-wrong">0</strong><span>問</span></dd>
+          </div>
+          <div>
+            <dt>残り</dt>
+            <dd><strong id="status-remaining">0</strong><span>問</span></dd>
+          </div>
+        </dl>
+
+        <p class="status-note">正解率は、解答済みの問題をもとに計算しています。</p>
+        <button id="status-close-button" class="status-close-button" type="button">問題に戻る</button>
+      </div>
+    </dialog>
+
     <footer class="footer">
-      <p>このページは、中間テストの出題範囲に基づく復習教材です。</p>
+      <p>このページは、期末試験の出題範囲に基づく復習教材です。</p>
       <p>担当：李　惠平 <span aria-hidden="true">·</span> <a href="mailto:ri-keihei-ff@m.takagigakuen.ac.jp">ri-keihei-ff@m.takagigakuen.ac.jp</a></p>
     </footer>
   </main>

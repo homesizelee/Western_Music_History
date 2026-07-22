@@ -22,7 +22,18 @@ const elements = {
   answerNote: document.getElementById("answer-note"),
   quizActions: document.getElementById("quiz-actions"),
   nextButton: document.getElementById("next-button"),
-  backButton: document.getElementById("back-button")
+  backButton: document.getElementById("back-button"),
+  statusButton: document.getElementById("status-button"),
+  statusDialog: document.getElementById("status-dialog"),
+  statusCloseIcon: document.getElementById("status-close-icon"),
+  statusCloseButton: document.getElementById("status-close-button"),
+  statusRing: document.getElementById("status-ring"),
+  statusPercentage: document.getElementById("status-percentage"),
+  statusMessage: document.getElementById("status-message"),
+  statusAnswered: document.getElementById("status-answered"),
+  statusCorrect: document.getElementById("status-correct"),
+  statusWrong: document.getElementById("status-wrong"),
+  statusRemaining: document.getElementById("status-remaining")
 };
 
 function shuffleArray(array) {
@@ -56,6 +67,7 @@ function startQuiz(mode) {
 
   elements.modeSelect.classList.add("hidden");
   elements.quizArea.classList.remove("hidden");
+  elements.statusButton.classList.remove("hidden");
   restoreQuizLayout();
   showQuestion();
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -166,6 +178,54 @@ function nextQuestion() {
   showQuestion();
 }
 
+function updateStatusDialog() {
+  const total = currentQuestions.length;
+  const answered = Math.min(currentIndex + (hasAnswered ? 1 : 0), total);
+  const wrong = answered - correctCount;
+  const remaining = Math.max(total - answered, 0);
+  const percentage = answered ? Math.round((correctCount / answered) * 100) : 0;
+  let message = "まずは一問、挑戦してみましょう。";
+
+  if (answered > 0 && percentage === 100) {
+    message = "ここまで全問正解です。その調子です。";
+  } else if (answered > 0 && percentage >= 80) {
+    message = "よく理解できています。順調に進んでいます。";
+  } else if (answered > 0 && percentage >= 60) {
+    message = "着実に進んでいます。間違えた問題も確認しましょう。";
+  } else if (answered > 0) {
+    message = "焦らず、正解を確認しながら進みましょう。";
+  }
+
+  elements.statusRing.style.setProperty("--status-percent", String(percentage));
+  elements.statusPercentage.textContent = percentage;
+  elements.statusMessage.textContent = message;
+  elements.statusAnswered.textContent = answered;
+  elements.statusCorrect.textContent = correctCount;
+  elements.statusWrong.textContent = wrong;
+  elements.statusRemaining.textContent = remaining;
+}
+
+function openStatusDialog() {
+  updateStatusDialog();
+
+  if (typeof elements.statusDialog.showModal === "function") {
+    elements.statusDialog.showModal();
+  } else {
+    elements.statusDialog.setAttribute("open", "");
+  }
+
+  elements.statusCloseButton.focus();
+}
+
+function closeStatusDialog() {
+  if (typeof elements.statusDialog.close === "function" && elements.statusDialog.open) {
+    elements.statusDialog.close();
+  } else {
+    elements.statusDialog.removeAttribute("open");
+    elements.statusButton.focus();
+  }
+}
+
 function showFinishedMessage() {
   const total = currentQuestions.length;
   const percentage = total ? Math.round((correctCount / total) * 100) : 0;
@@ -185,6 +245,7 @@ function showFinishedMessage() {
   elements.progressTrack.setAttribute("aria-valuetext", "完了");
   elements.rangeLabel.textContent = "全問終了";
   elements.questionBlock.classList.add("hidden");
+  elements.statusButton.classList.add("hidden");
   elements.choices.innerHTML = `
     <div class="finish-state">
       <div class="finish-medallion" aria-hidden="true">${percentage}<small>%</small></div>
@@ -220,6 +281,10 @@ function clearResult() {
 }
 
 function backToMenu() {
+  if (elements.statusDialog.open) {
+    closeStatusDialog();
+  }
+
   currentMode = null;
   currentQuestions = [];
   currentIndex = 0;
@@ -237,6 +302,7 @@ function backToMenu() {
 
 function handleKeyboard(event) {
   if (elements.quizArea.classList.contains("hidden")) return;
+  if (elements.statusDialog.open) return;
 
   if (!hasAnswered && /^[1-4]$/.test(event.key)) {
     const index = Number(event.key) - 1;
@@ -258,5 +324,14 @@ document.querySelectorAll(".mode-button").forEach(button => {
 
 elements.backButton.addEventListener("click", backToMenu);
 elements.nextButton.addEventListener("click", nextQuestion);
+elements.statusButton.addEventListener("click", openStatusDialog);
+elements.statusCloseIcon.addEventListener("click", closeStatusDialog);
+elements.statusCloseButton.addEventListener("click", closeStatusDialog);
+elements.statusDialog.addEventListener("close", () => elements.statusButton.focus());
+elements.statusDialog.addEventListener("click", event => {
+  if (event.target === elements.statusDialog) {
+    closeStatusDialog();
+  }
+});
 document.addEventListener("keydown", handleKeyboard);
 setQuestionCounts();
