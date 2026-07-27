@@ -1,4 +1,6 @@
 let currentMode = null;
+let currentSessionKey = "all";
+let currentScopeLabel = "全範囲";
 let currentQuestions = [];
 let currentIndex = 0;
 let currentQuestion = null;
@@ -7,11 +9,18 @@ let hasAnswered = false;
 
 const elements = {
   modeSelect: document.getElementById("mode-select"),
+  rangeSelect: document.getElementById("range-select"),
+  rangeBackButton: document.getElementById("range-back-button"),
+  rangeModeDescription: document.getElementById("range-mode-description"),
+  allRangeButton: document.getElementById("all-range-button"),
+  allRangeCount: document.getElementById("all-range-count"),
+  rangeButtons: document.getElementById("range-buttons"),
   quizArea: document.getElementById("quiz-area"),
   progress: document.getElementById("progress"),
   progressTrack: document.getElementById("progress-track"),
   progressBar: document.getElementById("progress-bar"),
   rangeLabel: document.getElementById("range-label"),
+  scopeLabel: document.getElementById("scope-label"),
   modeLabel: document.getElementById("mode-label"),
   questionBlock: document.getElementById("question-block"),
   questionNumber: document.getElementById("question-number"),
@@ -45,6 +54,82 @@ function shuffleArray(array) {
   return copied;
 }
 
+function normalizeRange(range) {
+  return String(range || "").replace(/\s+/g, " ").trim();
+}
+
+function getSessionNumber(range) {
+  const normalized = normalizeRange(range);
+  const match = normalized.match(/第\s*(\d+)\s*回/);
+
+  if (match) return Number(match[1]);
+
+  // 最新題庫の選択式・第13回は、回数の接頭辞が省略されているため補完する。
+  if (
+    /^バロック期の音楽[（(]2[）)]/.test(normalized) ||
+    normalized.includes("17世紀音楽の新しい語法と声楽ジャンル")
+  ) {
+    return 13;
+  }
+
+  return null;
+}
+
+function getModeQuestions(mode) {
+  return mode === "truefalse" ? trueFalseQuestions : multipleChoiceQuestions;
+}
+
+function getModeLabel(mode) {
+  return mode === "truefalse" ? "マルバツ問題" : "選択式問題";
+}
+
+function getSessionTitle(sessionNumber, questions) {
+  const question = questions.find(item => getSessionNumber(item.range) === sessionNumber);
+  if (!question) return `第${sessionNumber}回`;
+
+  const normalized = normalizeRange(question.range);
+  const withoutNumber = normalized.replace(
+    new RegExp(`^第\\s*${sessionNumber}\\s*回\\s*[:：]?\\s*`),
+    ""
+  );
+  return withoutNumber || `第${sessionNumber}回`;
+}
+
+function formatQuestionRange(range) {
+  const normalized = normalizeRange(range);
+  const sessionNumber = getSessionNumber(normalized);
+
+  if (sessionNumber === 13 && !/^第\s*13\s*回/.test(normalized)) {
+    return `第13回 ${normalized}`;
+  }
+
+  return normalized;
+}
+
+function getSessionGroups(mode) {
+  const questions = getModeQuestions(mode);
+  const groups = new Map();
+
+  questions.forEach(question => {
+    const sessionNumber = getSessionNumber(question.range);
+    if (sessionNumber === null) return;
+
+    if (!groups.has(sessionNumber)) {
+      groups.set(sessionNumber, []);
+    }
+    groups.get(sessionNumber).push(question);
+  });
+
+  return [...groups.entries()]
+    .sort((a, b) => a[0] - b[0])
+    .map(([sessionNumber, items]) => ({
+      sessionNumber,
+      questions: items,
+      title: getSessionTitle(sessionNumber, items),
+      label: `第${sessionNumber}回 ${getSessionTitle(sessionNumber, items)}`
+    }));
+}
+
 function setQuestionCounts() {
   document.getElementById("truefalse-count").textContent =
     `${trueFalseQuestions.length} 問`;
@@ -52,20 +137,73 @@ function setQuestionCounts() {
     `${multipleChoiceQuestions.length} 問`;
 }
 
-function startQuiz(mode) {
-  currentMode = mode;
-  currentIndex = 0;
-  correctCount = 0;
+function renderRangeOptions(mode) {
+  const questions = getModeQuestions(mode);
+  const groups = getSessionGroups(mode);
 
-  if (mode === "truefalse") {
-    currentQuestions = shuffleArray(trueFalseQuestions);
-    elements.modeLabel.textContent = "マルバツ問題";
-  } else {
-    currentQuestions = shuffleArray(multipleChoiceQuestions);
-    elements.modeLabel.textContent = "選択式問題";
-  }
+  elements.rangeModeDescription.textContent =
+    `${getModeLabel(mode)}を選択中です。復習したい授業回を選んでください。`;
+  elements.allRangeCount.textContent = `${questions.length} 問`;
+  elements.rangeButtons.innerHTML = "";
+
+  groups.forEach(group => {
+    const button = document.createElement("button");
+    button.className = "range-button";
+    button.type = "button";
+    button.dataset.session = String(group.sessionNumber);
+    button.setAttribute(
+      "aria-label",
+      `第${group.sessionNumber}回 ${group.title}、${group.questions.length}問`
+    );
+    button.innerHTML = `
+      <span class="range-number"></span>
+      <span class="range-title"></span>
+      <span class="range-count"></span>
+    `;
+    button.querySelector(".range-number").textContent = `第${group.sessionNumber}回`;
+    button.querySelector(".range-title").textContent = group.title;
+    button.querySelector(".range-count").textContent = `${group.questions.length} 問`;
+    button.addEventListener("click", () => startQuiz(String(group.sessionNumber)));
+    elements.rangeButtons.appendChild(button);
+  });
+}
+
+function openRangeSelect(mode) {
+  currentMode = mode;
+  currentSessionKey = "all";
+  currentScopeLabel = "全範囲";
+  renderRangeOptions(mode);
 
   elements.modeSelect.classList.add("hidden");
+  elements.quizArea.classList.add("hidden");
+  elements.rangeSelect.classList.remove("hidden");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  requestAnimationFrame(() => elements.allRangeButton.focus({ preventScroll: true }));
+}
+
+function startQuiz(sessionKey = "all") {
+  const sourceQuestions = getModeQuestions(currentMode);
+  const sessionGroups = getSessionGroups(currentMode);
+  const selectedGroup = sessionGroups.find(
+    group => String(group.sessionNumber) === String(sessionKey)
+  );
+
+  currentSessionKey = sessionKey;
+  currentScopeLabel = selectedGroup ? selectedGroup.label : "全範囲";
+  currentQuestions = shuffleArray(
+    selectedGroup ? selectedGroup.questions : sourceQuestions
+  );
+  currentIndex = 0;
+  correctCount = 0;
+  currentQuestion = null;
+  hasAnswered = false;
+
+  elements.modeLabel.textContent = getModeLabel(currentMode);
+  elements.scopeLabel.textContent = selectedGroup
+    ? `第${selectedGroup.sessionNumber}回`
+    : "全範囲";
+  elements.modeSelect.classList.add("hidden");
+  elements.rangeSelect.classList.add("hidden");
   elements.quizArea.classList.remove("hidden");
   elements.statusButton.classList.remove("hidden");
   restoreQuizLayout();
@@ -99,10 +237,12 @@ function showQuestion() {
   hasAnswered = false;
   updateProgress();
 
-  elements.rangeLabel.textContent = currentQuestion.range
-    ? `出題範囲：${currentQuestion.range}`
+  const formattedRange = formatQuestionRange(currentQuestion.range);
+  elements.rangeLabel.textContent = formattedRange
+    ? `出題範囲：${formattedRange}`
     : "";
-  elements.questionNumber.textContent = `QUESTION ${String(currentIndex + 1).padStart(2, "0")}`;
+  elements.questionNumber.textContent =
+    `QUESTION ${String(currentIndex + 1).padStart(2, "0")}`;
   elements.questionText.textContent = currentQuestion.question;
   elements.choices.innerHTML = "";
 
@@ -250,11 +390,12 @@ function showFinishedMessage() {
     <div class="finish-state">
       <div class="finish-medallion" aria-hidden="true">${percentage}<small>%</small></div>
       <h2>おつかれさまでした</h2>
+      <p class="finish-scope">${currentScopeLabel}</p>
       <p><strong>${total}問中 ${correctCount}問</strong> 正解しました。</p>
       <p>${message}</p>
       <div class="finish-actions">
-        <button class="finish-button" type="button" data-action="retry">同じ形式でもう一度</button>
-        <button class="finish-button secondary" type="button" data-action="menu">形式選択へ戻る</button>
+        <button class="finish-button" type="button" data-action="retry">同じ範囲でもう一度</button>
+        <button class="finish-button secondary" type="button" data-action="range">回数選択へ戻る</button>
       </div>
     </div>
   `;
@@ -262,9 +403,9 @@ function showFinishedMessage() {
   elements.quizActions.classList.add("hidden");
 
   elements.choices.querySelector('[data-action="retry"]').addEventListener("click", () => {
-    startQuiz(currentMode);
+    startQuiz(currentSessionKey);
   });
-  elements.choices.querySelector('[data-action="menu"]').addEventListener("click", backToMenu);
+  elements.choices.querySelector('[data-action="range"]').addEventListener("click", backToRangeSelect);
   elements.choices.querySelector('[data-action="retry"]').focus({ preventScroll: true });
 }
 
@@ -280,24 +421,47 @@ function clearResult() {
   elements.nextButton.classList.add("hidden");
 }
 
-function backToMenu() {
-  if (elements.statusDialog.open) {
-    closeStatusDialog();
-  }
-
-  currentMode = null;
+function resetQuizState() {
   currentQuestions = [];
   currentIndex = 0;
   currentQuestion = null;
   correctCount = 0;
   hasAnswered = false;
-
-  elements.quizArea.classList.add("hidden");
-  elements.modeSelect.classList.remove("hidden");
   restoreQuizLayout();
   clearResult();
+}
+
+function backToRangeSelect() {
+  if (elements.statusDialog.open) {
+    closeStatusDialog();
+  }
+
+  resetQuizState();
+  renderRangeOptions(currentMode);
+  elements.quizArea.classList.add("hidden");
+  elements.modeSelect.classList.add("hidden");
+  elements.rangeSelect.classList.remove("hidden");
+  elements.statusButton.classList.add("hidden");
   window.scrollTo({ top: 0, behavior: "smooth" });
-  document.querySelector(".mode-button").focus({ preventScroll: true });
+  requestAnimationFrame(() => elements.allRangeButton.focus({ preventScroll: true }));
+}
+
+function backToModeSelect() {
+  if (elements.statusDialog.open) {
+    closeStatusDialog();
+  }
+
+  resetQuizState();
+  currentMode = null;
+  currentSessionKey = "all";
+  currentScopeLabel = "全範囲";
+  elements.quizArea.classList.add("hidden");
+  elements.rangeSelect.classList.add("hidden");
+  elements.modeSelect.classList.remove("hidden");
+  window.scrollTo({ top: 0, behavior: "smooth" });
+  requestAnimationFrame(() => {
+    document.querySelector(".mode-button").focus({ preventScroll: true });
+  });
 }
 
 function handleKeyboard(event) {
@@ -319,10 +483,12 @@ function handleKeyboard(event) {
 }
 
 document.querySelectorAll(".mode-button").forEach(button => {
-  button.addEventListener("click", () => startQuiz(button.dataset.mode));
+  button.addEventListener("click", () => openRangeSelect(button.dataset.mode));
 });
 
-elements.backButton.addEventListener("click", backToMenu);
+elements.rangeBackButton.addEventListener("click", backToModeSelect);
+elements.allRangeButton.addEventListener("click", () => startQuiz("all"));
+elements.backButton.addEventListener("click", backToRangeSelect);
 elements.nextButton.addEventListener("click", nextQuestion);
 elements.statusButton.addEventListener("click", openStatusDialog);
 elements.statusCloseIcon.addEventListener("click", closeStatusDialog);

@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#002366" />
   <meta
     name="description"
-    content="福岡国際音楽大学 2026年前期「西洋音楽史 1」の期末試験復習クイズ"
+    content="福岡国際音楽大学 2026年前期「西洋音楽史 1」の中間テスト復習クイズ"
   />
   <title>西洋音楽史 1｜復習クイズ</title>
   <link rel="stylesheet" href="style.css" />
@@ -25,7 +25,7 @@
         <h1>西洋音楽史 <span>1</span></h1>
         <p class="course-name">福岡国際音楽大学・2026年前期</p>
         <p class="subtitle">
-          期末試験の出題範囲を、二つの形式で確認できます。選択式問題の選択肢は、毎回ランダムに並び替わります。
+          中間テストの出題範囲を、二つの形式で確認できます。選択式問題の選択肢は、毎回ランダムに並び替わります。
         </p>
       </div>
     </header>
@@ -63,14 +63,44 @@
 
       <div class="study-note">
         <span aria-hidden="true">♪</span>
-        <p><strong>学習のヒント</strong>　迷った問題も、正解を確認してから次へ進みましょう。</p>
+        <p><strong>学習のヒント</strong>　問題形式を選んだ後、復習したい授業回を選べます。</p>
       </div>
+    </section>
+
+    <section id="range-select" class="panel range-panel hidden" aria-labelledby="range-title">
+      <button id="range-back-button" class="back-button range-back-button" type="button">
+        <span aria-hidden="true">←</span> 問題形式へ戻る
+      </button>
+
+      <div class="section-heading range-heading">
+        <div>
+          <p class="section-kicker">SELECT RANGE</p>
+          <h2 id="range-title">授業回を選ぶ</h2>
+        </div>
+        <p id="range-mode-description"></p>
+      </div>
+
+      <button id="all-range-button" class="all-range-button" type="button">
+        <span class="all-range-mark" aria-hidden="true">ALL</span>
+        <span class="range-button-copy">
+          <strong>全範囲から出題</strong>
+          <small>第1回から第13回まで、すべての問題をランダムに出題します。</small>
+        </span>
+        <span id="all-range-count" class="range-count"></span>
+        <span class="mode-arrow" aria-hidden="true">→</span>
+      </button>
+
+      <div class="range-divider">
+        <span>授業回を指定する</span>
+      </div>
+
+      <div id="range-buttons" class="range-buttons" aria-label="授業回の選択肢"></div>
     </section>
 
     <section id="quiz-area" class="panel quiz-panel hidden" aria-labelledby="question-text">
       <div class="quiz-top">
         <button id="back-button" class="back-button" type="button">
-          <span aria-hidden="true">←</span> 形式選択へ戻る
+          <span aria-hidden="true">←</span> 回数選択へ戻る
         </button>
         <div class="quiz-top-actions">
           <button
@@ -101,7 +131,10 @@
 
       <div class="meta">
         <span id="range-label"></span>
-        <span id="mode-label" class="mode-label"></span>
+        <div class="meta-labels">
+          <span id="scope-label" class="scope-label"></span>
+          <span id="mode-label" class="mode-label"></span>
+        </div>
       </div>
 
       <div id="question-block" class="question-block">
@@ -128,7 +161,7 @@
         <div class="status-dialog-header">
           <div>
             <p class="section-kicker">PROGRESS</p>
-            <h2 id="status-title">現在の解答状況</h2>
+            <h2 id="status-title">現在の答題状況</h2>
           </div>
           <button id="status-close-icon" class="dialog-close-icon" type="button" aria-label="閉じる">×</button>
         </div>
@@ -141,7 +174,7 @@
             </div>
           </div>
           <div class="status-summary-copy">
-            <p>現在の正解率</p>
+            <p>現在の正答率</p>
             <strong id="status-message">まずは一問、挑戦してみましょう。</strong>
           </div>
         </div>
@@ -165,13 +198,13 @@
           </div>
         </dl>
 
-        <p class="status-note">正解率は、解答済みの問題をもとに計算しています。</p>
+        <p class="status-note">正答率は、解答済みの問題をもとに計算しています。</p>
         <button id="status-close-button" class="status-close-button" type="button">問題に戻る</button>
       </div>
     </dialog>
 
     <footer class="footer">
-      <p>このページは、期末試験の出題範囲に基づく復習教材です。</p>
+      <p>このページは、中間テストの出題範囲に基づく復習教材です。</p>
       <p>担当：李　惠平 <span aria-hidden="true">·</span> <a href="mailto:ri-keihei-ff@m.takagigakuen.ac.jp">ri-keihei-ff@m.takagigakuen.ac.jp</a></p>
     </footer>
   </main>
