@@ -1,226 +1,24 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#002366" />
-  <meta
-    name="description"
-    content="福岡国際音楽大学 2026年前期「西洋音楽史 1」期末試験の復習クイズ"
-  />
-  <title>西洋音楽史 1｜復習クイズ</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b2246">
+<meta name="description" content="西洋音楽史の復習と音源聴取のための学習サイト">
+<title>西洋音楽史｜復習と音源</title><link rel="stylesheet" href="style.css">
 </head>
-
 <body>
-  <a class="skip-link" href="#main-content">メインコンテンツへ</a>
-
-  <main id="main-content" class="page">
-    <header class="site-header">
-      <div class="header-mark" aria-hidden="true">
-        <span>Ⅰ</span>
-      </div>
-      <div class="header-copy">
-        <p class="course-label">REVIEW QUIZ · 2026</p>
-        <h1>西洋音楽史 <span>1</span></h1>
-        <p class="course-name">福岡国際音楽大学・2026年前期</p>
-        <p class="subtitle">
-          期末試験の出題範囲を、二つの形式で確認できます。選択式問題の選択肢は、毎回ランダムに並び替わります。
-        </p>
-      </div>
-    </header>
-
-    <section id="mode-select" class="panel mode-panel" aria-labelledby="mode-title">
-      <div class="section-heading">
-        <div>
-          <p class="section-kicker">START</p>
-          <h2 id="mode-title">問題形式を選ぶ</h2>
-        </div>
-        <p>取り組みたい形式を選択してください。</p>
-      </div>
-
-      <div class="mode-buttons">
-        <button class="mode-button" type="button" data-mode="truefalse">
-          <span class="mode-icon" aria-hidden="true">○<i>×</i></span>
-          <span class="mode-copy">
-            <strong>マルバツ問題</strong>
-            <small>文章が正しいかを判断する</small>
-          </span>
-          <span id="truefalse-count" class="mode-count"></span>
-          <span class="mode-arrow" aria-hidden="true">→</span>
-        </button>
-
-        <button class="mode-button" type="button" data-mode="multiple">
-          <span class="mode-icon mode-icon-letters" aria-hidden="true">A<i>B</i></span>
-          <span class="mode-copy">
-            <strong>選択式問題</strong>
-            <small>四つの選択肢から答えを選ぶ</small>
-          </span>
-          <span id="multiple-count" class="mode-count"></span>
-          <span class="mode-arrow" aria-hidden="true">→</span>
-        </button>
-      </div>
-
-      <div class="study-note">
-        <span aria-hidden="true">♪</span>
-        <p><strong>学習のヒント</strong>　問題形式を選んだ後、復習したい授業回を選べます。</p>
-      </div>
-    </section>
-
-    <section id="range-select" class="panel range-panel hidden" aria-labelledby="range-title">
-      <button id="range-back-button" class="back-button range-back-button" type="button">
-        <span aria-hidden="true">←</span> 問題形式へ戻る
-      </button>
-
-      <div class="section-heading range-heading">
-        <div>
-          <p class="section-kicker">SELECT RANGE</p>
-          <h2 id="range-title">授業回を選ぶ</h2>
-        </div>
-        <p id="range-mode-description"></p>
-      </div>
-
-      <button id="all-range-button" class="all-range-button" type="button">
-        <span class="all-range-mark" aria-hidden="true">ALL</span>
-        <span class="range-button-copy">
-          <strong>全範囲から出題</strong>
-          <small>第1回から第13回まで、すべての問題をランダムに出題します。</small>
-        </span>
-        <span id="all-range-count" class="range-count"></span>
-        <span class="mode-arrow" aria-hidden="true">→</span>
-      </button>
-
-      <div class="range-divider">
-        <span>授業回を指定する</span>
-      </div>
-
-      <div id="range-buttons" class="range-buttons" aria-label="授業回の選択肢"></div>
-    </section>
-
-    <section id="quiz-area" class="panel quiz-panel hidden" aria-labelledby="question-text">
-      <div class="quiz-top">
-        <button id="back-button" class="back-button" type="button">
-          <span aria-hidden="true">←</span> 回数選択へ戻る
-        </button>
-        <div class="quiz-top-actions">
-          <button
-            id="status-button"
-            class="status-button"
-            type="button"
-            aria-haspopup="dialog"
-            aria-controls="status-dialog"
-          >
-            <span class="status-button-icon" aria-hidden="true">▥</span>
-            途中経過
-          </button>
-          <div id="progress" class="progress" aria-live="polite"></div>
-        </div>
-      </div>
-
-      <div
-        id="progress-track"
-        class="progress-track"
-        role="progressbar"
-        aria-label="問題の進捗"
-        aria-valuemin="0"
-        aria-valuemax="100"
-        aria-valuenow="0"
-      >
-        <span id="progress-bar"></span>
-      </div>
-
-      <div class="meta">
-        <span id="range-label"></span>
-        <div class="meta-labels">
-          <span id="scope-label" class="scope-label"></span>
-          <span id="mode-label" class="mode-label"></span>
-        </div>
-      </div>
-
-      <div id="question-block" class="question-block">
-        <p id="question-number" class="question-number"></p>
-        <h2 id="question-text" class="question-text" tabindex="-1"></h2>
-      </div>
-
-      <div id="choices" class="choices" aria-label="選択肢"></div>
-
-      <div id="feedback" class="feedback hidden" aria-live="polite" aria-atomic="true">
-        <div id="result" class="result"></div>
-        <div id="answer-note" class="answer-note"></div>
-      </div>
-
-      <div id="quiz-actions" class="quiz-actions">
-        <button id="next-button" class="next-button hidden" type="button">
-          次の問題へ <span aria-hidden="true">→</span>
-        </button>
-      </div>
-    </section>
-
-    <dialog id="status-dialog" class="status-dialog" aria-labelledby="status-title">
-      <div class="status-dialog-inner">
-        <div class="status-dialog-header">
-          <div>
-            <p class="section-kicker">PROGRESS</p>
-            <h2 id="status-title">現在の解答状況</h2>
-          </div>
-          <button id="status-close-icon" class="dialog-close-icon" type="button" aria-label="閉じる">×</button>
-        </div>
-
-        <div class="status-summary">
-          <div id="status-ring" class="status-ring" aria-hidden="true">
-            <div>
-              <strong id="status-percentage">0</strong>
-              <small>%</small>
-            </div>
-          </div>
-          <div class="status-summary-copy">
-            <p>現在の正解率</p>
-            <strong id="status-message">まずは一問、挑戦してみましょう。</strong>
-          </div>
-        </div>
-
-        <dl class="status-stats">
-          <div>
-            <dt>解答済み</dt>
-            <dd><strong id="status-answered">0</strong><span>問</span></dd>
-          </div>
-          <div class="is-correct">
-            <dt>正解</dt>
-            <dd><strong id="status-correct">0</strong><span>問</span></dd>
-          </div>
-          <div class="is-wrong">
-            <dt>不正解</dt>
-            <dd><strong id="status-wrong">0</strong><span>問</span></dd>
-          </div>
-          <div>
-            <dt>残り</dt>
-            <dd><strong id="status-remaining">0</strong><span>問</span></dd>
-          </div>
-        </dl>
-
-        <p class="status-note">正解率は、解答済みの問題をもとに計算しています。</p>
-        <button id="status-close-button" class="status-close-button" type="button">問題に戻る</button>
-      </div>
-    </dialog>
-
-    <aside class="visitor-counter" aria-label="累計訪問回数">
-      <span class="visitor-counter-ornament" aria-hidden="true"></span>
-      <img
-        src="https://hits.sh/fimu-quiz-2026.example.com/western-music-history-i.svg?view=total&amp;style=flat-square&amp;label=VISITORS&amp;color=002366&amp;labelColor=b79a58"
-        alt="累計訪問回数"
-        height="20"
-        decoding="async"
-        referrerpolicy="no-referrer"
-      />
-    </aside>
-
-    <footer class="footer">
-      <p>このページは、期末試験の出題範囲に基づく復習教材です。</p>
-      <p>担当：李　惠平 <span aria-hidden="true">·</span> <a href="mailto:ri-keihei-ff@m.takagigakuen.ac.jp">ri-keihei-ff@m.takagigakuen.ac.jp</a></p>
-    </footer>
-  </main>
-
-  <script src="questions.js"></script>
-  <script src="script.js"></script>
-</body>
-</html>
+<a class="skip" href="#main">本文へ</a>
+<header class="topbar"><a class="brand" href="#home" aria-label="トップページ"><span class="brand-mark">♫</span><span><b>MUSIC HISTORY</b><small>西洋音楽史 学習ポータル</small></span></a><span class="top-label">FUKUOKA INTERNATIONAL UNIVERSITY OF MUSIC</span></header>
+<main id="main" class="page" tabindex="-1">
+<section id="home" class="screen">
+<div class="hero"><div class="hero-content"><p class="eyebrow light">YOUR STUDY COMPANION <span> / </span> MUSIC HISTORY</p><h1>音楽の歴史を、<br><em>もう一度。</em></h1><p class="hero-text">授業を振り返り、知識を確かめ、音楽に耳を澄ます。<br>自分のペースで学べる復習のための場所です。</p><div class="hero-hint"><span>01</span> 学期と問題形式を選んで、復習をはじめましょう。</div></div><div class="hero-art" aria-hidden="true"><div class="staff"><i></i><i></i><i></i><i></i><i></i></div><span class="note one">♪</span><span class="note two">♩</span><span class="note three">♫</span><div class="art-circle"></div></div><span class="hero-index">WESTERN<br>MUSIC HISTORY<br>2026</span></div>
+<div class="section-head"><div><p class="eyebrow">CHOOSE YOUR PATH</p><h2>どこからはじめますか？</h2></div><p>学期を選ぶか、音源一覧へ進んでください。</p></div>
+<div class="home-grid"><button class="home-card semester-card" data-term="first"><span class="card-number">01 / SEMESTER</span><span class="card-icon">Ⅰ</span><span class="card-title">前期 <small>西洋音楽史 1</small></span><span class="card-description">授業回ごとの復習と、全範囲からのランダム出題。</span><span class="card-bottom"><span id="first-total"></span><span class="circle-arrow">↗</span></span></button><button class="home-card semester-card" data-term="second"><span class="card-number">02 / SEMESTER</span><span class="card-icon">Ⅱ</span><span class="card-title">後期 <small>西洋音楽史 2</small></span><span class="card-description">後期の授業に合わせて、問題を追加していきます。</span><span class="card-bottom"><span id="second-total"></span><span class="circle-arrow">↗</span></span></button><button class="home-card listen-card" id="open-listening"><span class="card-number">LISTENING LIBRARY</span><span class="card-icon sound-icon">♬</span><span class="card-title">音源を聴く <small>LISTENING</small></span><span class="card-description">授業で取り上げた音楽を、一覧から探して聴く。</span><span class="card-bottom"><span>前期の音源一覧</span><span class="circle-arrow">↗</span></span></button></div>
+</section>
+<section id="mode" class="screen" hidden><button class="back" data-go="home">← トップへ戻る</button><div class="page-heading"><p class="eyebrow">STEP 01 / QUESTION TYPE</p><h1>問題形式を選ぶ</h1><p><span class="term-name"></span>の復習です。取り組みたい形式を選んでください。</p></div><div class="mode-grid"><button class="mode-card" data-mode="truefalse"><span class="mode-symbol">○ <i>×</i></span><span class="mode-main"><b>マルバツ問題</b><small>文章が正しいかを判断します</small></span><span class="count" id="tf-count"></span><span class="mode-arrow">↗</span></button><button class="mode-card" data-mode="multiple"><span class="mode-symbol letters">A <i>B</i></span><span class="mode-main"><b>4択問題</b><small>4つの選択肢から正解を選びます</small></span><span class="count" id="mc-count"></span><span class="mode-arrow">↗</span></button></div><p class="hint">✦　問題と4択の選択肢は、挑戦するたびにランダムに並び替わります。</p></section>
+<section id="ranges" class="screen" hidden><button class="back" data-go="mode">← 問題形式へ戻る</button><div class="page-heading"><p class="eyebrow">STEP 02 / SELECT RANGE</p><h1>授業回を選ぶ</h1><p><span class="term-name"></span> · <span class="mode-name"></span></p></div><button id="all" class="all-card"><span class="all-icon">ALL</span><span><b>全範囲からランダム出題</b><small>すべての授業回の問題を、ランダムな順番で出題します。</small></span><span id="all-count" class="count"></span><span>→</span></button><div class="divider"><span>授業回を指定する</span></div><div id="range-list" class="range-list"></div><div id="empty-range" class="empty" hidden><b>問題は準備中です</b><p>問題が追加されると、ここに授業回が表示されます。</p></div></section>
+<section id="quiz" class="screen" hidden><div class="quiz-header"><button class="back" data-go="ranges">← 回数選択へ戻る</button><button id="status" class="status">途中経過</button></div><div class="quiz-panel"><div class="progress-row"><span>YOUR PROGRESS</span><b id="progress-text"></b></div><div class="progress-track" role="progressbar" aria-label="進捗" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span id="progress-bar"></span></div><div class="quiz-meta"><span id="quiz-range"></span><span id="quiz-mode"></span></div><div id="question-view"><p class="eyebrow question-index" id="question-number"></p><h1 id="question-text" tabindex="-1"></h1><div id="choices" class="choices"></div><div id="feedback" class="feedback" role="status" hidden></div><div class="next-row"><button id="next" class="primary" hidden>次の問題へ →</button></div></div><div id="finished" class="finished" hidden></div></div></section>
+<section id="listening" class="screen" hidden><button class="back" data-go="home">← トップへ戻る</button><div class="page-heading"><p class="eyebrow">LISTENING LIBRARY / FIRST SEMESTER</p><h1>音源を聴く</h1><p>前期の授業で取り上げた音源を一覧から探せます。</p></div><div class="library-panel"><div class="library-intro"><div><span class="record-icon">♫</span></div><div><h2>前期の音源一覧</h2><p>作曲家や作品名から音源を探せます。</p></div></div><label class="search-label" for="search">一覧を検索</label><input id="search" type="search" placeholder="作曲家・作品名などを入力"><div id="listen-list" class="listen-list"></div><div id="listen-empty" class="empty"><b>音源一覧を準備しています</b><p>一覧が追加されると、ここに表示されます。</p></div><div id="no-results" class="empty" hidden>該当する音源はありません。</div><div id="player"></div></div></section>
+<dialog id="status-dialog"><form method="dialog"><div class="dialog-top"><div><p class="eyebrow">YOUR PROGRESS</p><h2>現在の解答状況</h2></div><button class="close" aria-label="閉じる">×</button></div><div class="stats" id="stats"></div><p class="dialog-note">正解率は解答済みの問題をもとに計算しています。</p><button class="primary">問題に戻る</button></form></dialog>
+</main><footer class="footer"><div><b>♫　WESTERN MUSIC HISTORY</b><p>学びをつなぐ、音楽史の復習ページ。</p></div><div class="footer-right"><img src="https://hits.sh/fimu-quiz-2026.example.com/western-music-history-i.svg?view=total&amp;style=flat-square&amp;label=VISITORS&amp;color=002366&amp;labelColor=b79a58" alt="累計訪問回数" height="20" referrerpolicy="no-referrer"><p>担当：李 惠平 · <a href="mailto:ri-keihei-ff@m.takagigakuen.ac.jp">お問い合わせ</a></p></div></footer>
+<script src="questions.js"></script><script src="later-questions.js"></script><script src="listening.js"></script><script src="script.js"></script>
+</body></html>
