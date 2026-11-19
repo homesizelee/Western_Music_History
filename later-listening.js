@@ -1,4 +1,4 @@
-// 後期の音源リスト（第1〜6回）。
+// 後期の音源リスト（第1〜7回）。
 // Naxosの指定時刻は再生後に手動で移動してください。
 const laterListeningItems = [
   {
@@ -350,5 +350,61 @@ const laterListeningItems = [
     "composer": "ヴォルフガング・アマデウス・モーツァルト（Wolfgang Amadeus Mozart）",
     "date": "1784年",
     "url": "https://ml.naxos.jp/track/3525577"
+  },
+  {
+    "session": "第7回 ベートーヴェン――ロマン主義時代の幕開けおよび近代的作曲家像の完成",
+    "title": "《交響曲第1番 ハ長調》Op. 21 第1楽章 序奏",
+    "composer": "ルートヴィヒ・ファン・ベートーヴェン（Ludwig van Beethoven）",
+    "date": "1800年",
+    "url": "https://ml.naxos.jp/track/3858044"
+  },
+  {
+    "session": "第7回 ベートーヴェン――ロマン主義時代の幕開けおよび近代的作曲家像の完成",
+    "title": "《交響曲第3番 変ホ長調「英雄」》Op. 55 第1楽章（冒頭）",
+    "composer": "ルートヴィヒ・ファン・ベートーヴェン（Ludwig van Beethoven）",
+    "date": "1803〜04年",
+    "url": "https://ml.naxos.jp/track/6316210"
+  },
+  {
+    "session": "第7回 ベートーヴェン――ロマン主義時代の幕開けおよび近代的作曲家像の完成",
+    "title": "《交響曲第3番 変ホ長調「英雄」》Op. 55 第1楽章（9:58頃〜：第1ホルンの「フライング進入」、mm. 394–395）",
+    "composer": "ルートヴィヒ・ファン・ベートーヴェン（Ludwig van Beethoven）",
+    "date": "1803〜04年",
+    "url": "https://ml.naxos.jp/track/6316210"
+  },
+  {
+    "session": "第7回 ベートーヴェン――ロマン主義時代の幕開けおよび近代的作曲家像の完成",
+    "title": "《交響曲第3番 変ホ長調「英雄」》Op. 55 第1楽章（12:57頃〜：コーダ冒頭近くのD♭、第557小節）",
+    "composer": "ルートヴィヒ・ファン・ベートーヴェン（Ludwig van Beethoven）",
+    "date": "1803〜04年",
+    "url": "https://ml.naxos.jp/track/6316210"
+  },
+  {
+    "session": "第7回 ベートーヴェン――ロマン主義時代の幕開けおよび近代的作曲家像の完成",
+    "title": "《交響曲第3番 変ホ長調「英雄」》Op. 55 第1楽章（14:21頃〜：第1ホルンによる主題の再提示、第631小節）",
+    "composer": "ルートヴィヒ・ファン・ベートーヴェン（Ludwig van Beethoven）",
+    "date": "1803〜04年",
+    "url": "https://ml.naxos.jp/track/6316210"
+  },
+  {
+    "session": "第7回 ベートーヴェン――ロマン主義時代の幕開けおよび近代的作曲家像の完成",
+    "title": "《ピアノソナタ第32番 ハ短調》Op. 111 第1楽章（8:24〜：ハ長調へ静かに着地）",
+    "composer": "ルートヴィヒ・ファン・ベートーヴェン（Ludwig van Beethoven）",
+    "date": "1822年",
+    "url": "https://ml.naxos.jp/track/4226727"
+  },
+  {
+    "session": "第7回 ベートーヴェン――ロマン主義時代の幕開けおよび近代的作曲家像の完成",
+    "title": "《ピアノソナタ第32番 ハ短調》Op. 111 第2楽章（11:52〜：三重トリル、mm. 106–120）",
+    "composer": "ルートヴィヒ・ファン・ベートーヴェン（Ludwig van Beethoven）",
+    "date": "1822年",
+    "url": "https://ml.naxos.jp/track/4226728"
+  },
+  {
+    "session": "第7回 ベートーヴェン――ロマン主義時代の幕開けおよび近代的作曲家像の完成",
+    "title": "《ピアノ三重奏曲第3番 ハ短調》Op. 1 No. 3 第1楽章（課題音源）",
+    "composer": "ルートヴィヒ・ファン・ベートーヴェン（Ludwig van Beethoven）",
+    "date": "1795年",
+    "url": "https://ml.naxos.jp/track/6512850"
   }
 ];
