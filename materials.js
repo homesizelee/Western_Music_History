@@ -66,6 +66,16 @@ const courseMaterials = {
             "url": "https://drive.google.com/file/d/1t09ji6opr4SbOmZ5nmFZqV-dALAGb17e/view?usp=drive_link"
           }
         ]
+      },
+      {
+        "number": 7,
+        "title": "ベートーヴェン－－ロマン主義時代の幕開け及び近代的作曲家像の完成",
+        "files": [
+          {
+            "name": "レジュメ",
+            "url": "https://drive.google.com/file/d/1ojmc3MWATA3nv47L_-R6FVhrD-7vm2cy/view?usp=sharing"
+          }
+        ]
       }
     ]
   }
